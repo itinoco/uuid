@@ -268,8 +268,11 @@ class UUID
 
       # Ensure the mode is respected, even with a restrictive umask
       #File.open(state_file, 'w') { |f| f.chmod(self.class.mode) } if state_file && !File.exist?(state_file)
-      my_f = File.open(state_file, 'w')
-      my_f.chmod(self.class.mode) if state_file && !File.exist?(state_file)
+      my_f = File.new(state_file, 'w')
+      my_f.write(state_file.read)
+      if state_file && !File.exist?(state_file)
+        my_f.chmod(state_file.class.mode)
+      end
 
       if state_file
         open_lock 'wb' do |io|
